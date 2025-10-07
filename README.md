@@ -1,8 +1,3 @@
-Perfect 👍 — here’s your **final, complete, single-file `README.md`** that clearly states that this service scrapes website data and publishes it to the Kafka topic **`scrap_data`**.
-Everything is cleanly formatted, consistent, and production-ready.
-
----
-
 ```markdown
 # 🚀 HappenHub Scraping Service
 
