@@ -1,271 +1,84 @@
-```markdown
-# 🚀 HappenHub Scraping Service
+# HappenHub: Event Aggregator Platform
 
-This microservice is responsible for **scraping event, job, internship, and hackathon data** from external websites (like **Internshala** and **DevPost**) and publishing the collected data to an **Apache Kafka** topic named **`scrap_data`**.
+HappenHub is a modern, scalable event aggregation platform built on a **microservices architecture**. It uses an **event-driven design** with **Apache Kafka** as the central nervous system to ensure high availability, decoupling, and real-time data processing.
 
-It is part of the **HappenHub ecosystem**, designed for event aggregation and distribution.
+## 🚀 Architecture Overview
 
----
+The system is composed of several independent services that communicate primarily through asynchronous messaging (Kafka topics). This design principle ensures that failure in one service does not propagate to others, enhancing overall system resilience.
 
-## 🧠 Overview
+A visual representation of the design can be found [here - *Insert Link to Excalidraw or diagram image*].
 
-- 🕸️ Scrapes data from trusted platforms.
-- 📨 Publishes the scraped data to **Kafka (`scrap_data` topic)**.
-- 🧱 Built using **Spring Boot**, **Kafka**, and **Java 17**.
-- 🧩 Exposes REST endpoints for testing and manual triggering.
+## 🧱 Core Components and Data Flow
 
----
+The architecture is divided into specialized services, each responsible for a single business capability and typically managing its own data store (Database per Service pattern).
 
-## 🌐 Base URL
-
-All API routes are prefixed with:
-
-```
-
-/api/v1/data
-
-```
-
-Example full path:
-```
-
-[http://localhost:8080/api/v1/data/internshala/jobs](http://localhost:8080/api/v1/data/internshala/jobs)
-
-```
-
----
-
-## ⚙️ Tech Stack
-
-| Component | Technology |
-|------------|-------------|
-| Framework | Spring Boot |
-| Messaging | Apache Kafka |
-| Language | Java 17+ |
-| JSON Processing | Jackson |
-| Build Tool | Gradle / Maven |
-
----
-
-## 📁 Project Structure
-
-```
-
-src/main/java/com/adarsh/
-├── controller/
-│   └── ScrapingController.java
-├── eventProducer/
-│   └── EventProducer.java
-├── model/
-│   └── EventModel.java
-└── service/
-└── ScrapingService.java
-
-````
-
----
-
-## 🧭 API Endpoints
-
-### 1️⃣ Scraping Endpoints (GET)
-
-These endpoints trigger scraping operations for different platforms.  
-The results are both **returned to the client** and **sent to Kafka** (`scrap_data` topic).
-
-| HTTP Method | Endpoint | Description | Success Status |
+| Service | Primary Function | Kafka Role (Topics) | Database |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/internshala/jobs` | Scrapes available **jobs** from Internshala. | `200 OK` |
-| `GET` | `/internshala/internships` | Scrapes available **internships** from Internshala. | `200 OK` |
-| `GET` | `/devposts/hackathons` | Scrapes ongoing or upcoming **hackathons** from DevPost. | `200 OK` |
-
-#### ✅ Example Success Response (`200 OK`)
-
-```json
-[
-  {
-    "event_id": 101,
-    "title": "Software Development Internship",
-    "image_url": "https://internshala.com/logo.png",
-    "event_link": "https://internshala.com/internship/software-dev",
-    "location": "Remote",
-    "salary": "₹15,000 / month",
-    "start_date": "2025-06-01",
-    "end_date": "2025-12-31",
-    "type": "Internship",
-    "description": "Develop and maintain backend systems."
-  }
-]
-````
+| **Scraping Service** | Ingests raw event data from external sources. | **Produces** `scrap-data` | N/A |
+| **DS Service (Data Standardization)** | Cleans, normalizes, and validates raw event data. | **Consumes** `scrap-data`, **Produces** `event-data` | N/A |
+| **Event Service** | Core business logic and persistence for standardized events. | **Consumes** `event-data` | **eventsdb** (Main Event Data Store) |
+| **Auth Service** | Manages user registration, login, and authorization. | **Produces** `user-data` | **usersdb** |
+| **Search Service** | Indexes event data to provide fast, full-text search capabilities. | **Consumes** `event-data` | **searchdb** (Search Engine) |
+| **Recommendation Service** | Generates personalized event recommendations for users. | **Consumes** `event-data` & `user-data` | **recomandationdb** |
+| **Wishlist Service** | Manages user-specific lists of saved/favorited events. | **Produces** `mail-data` (for event alerts) | **wishlistdb** |
+| **Mail Service** | Handles all asynchronous communication with users (e.g., alerts, digests). | **Consumes** `mail-data` | N/A |
 
 ---
 
-### 2️⃣ Event Publishing Endpoint (POST)
+## 🔗 Data Communication Summary
 
-Manually publish a custom event to the Kafka topic **`scrap_data`**.
+### Asynchronous Flow (Kafka)
 
-| HTTP Method | Endpoint  | Description                               | Success Status |
-| :---------- | :-------- | :---------------------------------------- | :------------- |
-| `POST`      | `/events` | Publishes a custom `EventModel` to Kafka. | `201 Created`  |
+The bulk of the system communication is handled by Kafka, enabling decoupling and high-throughput data processing.
 
-#### 🧾 Request Body (`EventModel`)
+| Producer | Topic Name | Consumer(s) |
+| :--- | :--- | :--- |
+| **Scraping Service** | `scrap-data` | DS Service |
+| **DS Service** | `event-data` | Event Service, Search Service, Recommendation Service |
+| **Auth Service** | `user-data` | Recommendation Service |
+| **Wishlist Service** | `mail-data` | Mail Service |
 
-| Field         | Type     | Description                                           |
-| :------------ | :------- | :---------------------------------------------------- |
-| `event_id`    | `Long`   | Unique identifier for the event.                      |
-| `title`       | `String` | The title of the event/job/internship.                |
-| `image_url`   | `String` | URL to an image or logo.                              |
-| `event_link`  | `String` | Link to the event or listing.                         |
-| `location`    | `String` | Location or “Remote”.                                 |
-| `salary`      | `String` | Salary or stipend (if applicable).                    |
-| `start_date`  | `String` | Start date (format: `YYYY-MM-DD`).                    |
-| `end_date`    | `String` | End date or deadline.                                 |
-| `type`        | `String` | Type of the event (e.g., Job, Internship, Hackathon). |
-| `description` | `String` | Detailed event description.                           |
+### Synchronous Flow (HTTP)
 
-#### Example Request
+Services that require real-time client interaction (like user-facing APIs) use synchronous HTTP/REST communication.
 
-```json
-{
-  "title": "Hack the Future 2025",
-  "image_url": "https://devpost.com/hackathon.png",
-  "event_link": "https://devpost.com/hackathons/hackthefuture",
-  "location": "Online",
-  "salary": "N/A",
-  "start_date": "2025-12-01",
-  "end_date": "2025-12-03",
-  "type": "Hackathon",
-  "description": "A global hackathon for innovators."
-}
-```
-
-#### ✅ Example Response (`201 Created`)
-
-```
-Event published successfully.
-```
+* **Client (via API Gateway)** ↔ **Wishlist Service**: For adding, removing, and viewing events on a user's wishlist.
+* **Wishlist Service** ↔ **Event Service**: (Likely) To retrieve real-time event details based on Wishlist IDs.
 
 ---
 
-## 🛑 Error Handling
+## 🛠️ Technology Stack (Suggested)
 
-| Status Code                 | Description                                                         | Example Body                                 |
-| :-------------------------- | :------------------------------------------------------------------ | :------------------------------------------- |
-| `500 Internal Server Error` | Occurs when scraping fails or Kafka publishing encounters an error. | `"Failed to retrieve Internshala job data."` |
+| Category | Technology | Rationale |
+| :--- | :--- | :--- |
+| **Messaging** | **Apache Kafka** | Event-driven architecture, decoupling, and fault tolerance. |
+| **Service Framework** | Python (FastAPI/Flask) / Go / Java (Spring Boot) | Flexibility and performance for microservices. |
+| **Primary Database** | PostgreSQL/MySQL | Reliability and transactional integrity for core event data (`eventsdb`). |
+| **Search Database** | Elasticsearch/Solr | Optimized for full-text and complex search queries (`searchdb`). |
+| **User/Auth DB** | MongoDB/PostgreSQL | Scalable and secure user data management (`usersdb`). |
 
-#### Example:
+## 💡 Key Design Decisions
 
-```
-HTTP 500 INTERNAL_SERVER_ERROR
-Body: "Failed to publish event."
-```
-
----
-
-## ⚙️ Kafka Configuration
-
-In `application.yml`:
-
-```yaml
-spring:
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-```
-
-### Kafka Topic
-
-| Property          | Value                        |
-| ----------------- | ---------------------------- |
-| **Topic Name**    | `scrap_data`                 |
-| **Message Key**   | Event ID or UUID             |
-| **Message Value** | Serialized `EventModel` JSON |
+1.  **Event-Driven Core:** All major data changes (scraped data, new events, user updates) are published as immutable events to Kafka. This allows services to react autonomously.
+2.  **Separate Search Engine:** Indexing event data in a dedicated `searchdb` (e.g., Elasticsearch) offloads complex search queries from the primary `eventsdb`, ensuring the Event Service remains responsive.
+3.  **Specialized Recommendation Engine:** The Recommendation Service uses a stream of `event-data` and `user-data` to continuously update recommendations, storing complex models or pre-calculated results in its dedicated database.
 
 ---
 
-## 🧠 How It Works
+## 🏁 Getting Started
 
-```mermaid
-flowchart TD
-    A[Website Sources (Internshala, DevPost)] --> B[ScrapingService]
-    B --> C[ScrapingController]
-    C --> D[EventProducer]
-    D --> E[Kafka Topic: scrap_data]
-    E --> F[Consumer Microservices]
-```
+To run the HappenHub platform locally:
 
-1. The controller triggers the `ScrapingService`.
-2. The service scrapes website data and converts it into `EventModel` objects.
-3. The `EventProducer` publishes the data to Kafka topic **`scrap_data`**.
-4. Consumer microservices subscribe to this topic for further processing (like storing or analyzing).
+1.  **Prerequisites:** Docker, Docker Compose, Python (or chosen language runtime).
+2.  **Clone the Repository:**
+    ```bash
+    git clone [Your Repository URL]
+    cd happenhub
+    ```
+3.  **Start Infrastructure (Kafka, Databases):**
+    ```bash
+    docker-compose up -d kafka zookeeper eventsdb usersdb ...
+    ```
+4.  **Run Services:** Navigate to each service directory and follow its local run instructions (e.g., `python main.py` or similar).
 
----
-
-## 🧰 Development Setup
-
-### Prerequisites
-
-* Java 17+
-* Kafka & Zookeeper running locally
-* Gradle or Maven
-* Internet connection for scraping
-
-### Run the Service
-
-```bash
-./gradlew bootRun
-```
-
-or
-
-```bash
-mvn spring-boot:run
-```
-
----
-
-## 🧩 Event Model Definition
-
-```java
-@Data
-@Builder
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class EventModel {
-    private Long eventId;
-    private String title;
-    private String imageUrl;
-    private String eventLink;
-    private String location;
-    private String salary;
-    private String startDate;
-    private String endDate;
-    private String type;
-    private String description;
-}
-```
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License** — you are free to modify and use it.
-
----
-
-## 👤 Author
-
-**Adarsh Yashoda**
-🎓 Rajiv Gandhi University of Knowledge Technologies, Basar
-💻 Backend Developer | Java | Spring Boot | Kafka | Selenium
-📧 [[adarsh@example.com](mailto:adarsh@example.com)]
-
----
-
-```
-
----
-
-Would you like me to add a **Postman collection JSON export section** (so you can directly import and test these APIs in Postman)?
-```
+***
