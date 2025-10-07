@@ -1,18 +1,18 @@
-## Event Discovery Platform 🚀
+## Event Discovery Platform 
 
-This document outlines the design and architecture of the **Event Discovery Platform**, a microservices-based system built to aggregate, process, and deliver personalized event (jobs, internships, hackathons) information to users.
-
----
+his repository contains the design and implementation for the Event Discovery Platform, a microservices-based system designed to aggregate, process, and deliver personalized event (jobs, internships, hackathons) information to users.
 
 ---
 
-## 🏗 System Architecture Diagram (Visual Overview)
+---
+
+## System Architecture Diagram (Visual Overview)
 
 ![Event Discovery Platform Microservices Architecture Diagram](design.svg) 
 
 ---
 
-## 🏗 System Architecture: Microservices with Event Streaming
+## System Architecture: Microservices with Event Streaming
 
 The system employs a **Microservices Architecture** where each business function is isolated into an independent service. **Apache Kafka** is central to this design, acting as the high-throughput, fault-tolerant message broker for asynchronous, decoupled communication between services.
 
@@ -25,7 +25,7 @@ The system employs a **Microservices Architecture** where each business function
 
 ---
 
-## 🌐 Data Flow and Communication
+## Data Flow and Communication
 
 The platform's operation is defined by the lifecycle of two main entities: **Events** and **Users**.
 
@@ -46,7 +46,7 @@ The platform's operation is defined by the lifecycle of two main entities: **Eve
 
 ---
 
-## 💻 Microservices and Responsibilities
+## Microservices and Responsibilities
 
 The system is composed of the following services, detailing their role and interaction with the Kafka event stream:
 
@@ -63,7 +63,7 @@ The system is composed of the following services, detailing their role and inter
 
 ---
 
-## 🔗 Kafka Topics (Asynchronous Contracts)
+## Kafka Topics (Asynchronous Contracts)
 
 | Topic Name | Producer Service(s) | Consumer Service(s) | Event Type |
 | :--- | :--- | :--- | :--- |
@@ -73,7 +73,7 @@ The system is composed of the following services, detailing their role and inter
 | **`mail-data`** | Wishlist Service (Inferred) | Mail Service (Inferred) | Payload to trigger an email send. |
 
 
-## 🧰 Technology Stack Overview
+## Technology Stack Overview
 
 | Category                     | Technology           | Services Used In           | Purpose & Notes                                                                                   |
 |-------------------------------|-------------------|---------------------------|--------------------------------------------------------------------------------------------------|
