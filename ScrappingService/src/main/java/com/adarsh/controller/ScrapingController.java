@@ -16,7 +16,6 @@ public class ScrapingController {
 
     @Autowired
     private ScrapingService scrapingService;
-
     @Autowired
     private EventProducer eventProducer;
 
