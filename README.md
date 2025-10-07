@@ -4,6 +4,14 @@ This document outlines the design and architecture of the **Event Discovery Plat
 
 ---
 
+---
+
+## 🏗 System Architecture Diagram (Visual Overview)
+
+![Event Discovery Platform Microservices Architecture Diagram](design.svg) 
+
+---
+
 ## 🏗 System Architecture: Microservices with Event Streaming
 
 The system employs a **Microservices Architecture** where each business function is isolated into an independent service. **Apache Kafka** is central to this design, acting as the high-throughput, fault-tolerant message broker for asynchronous, decoupled communication between services.
