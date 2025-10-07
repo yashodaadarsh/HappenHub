@@ -83,13 +83,107 @@ The system is composed of the following services, detailing their role and inter
 | Python / LangChain             | Python / LangChain | DS Service Only           | Used for data cleaning, transformation, and complex logic involving AI/NLP.                     |
 | Asynchronous Communication     | Apache Kafka       | All Services              | The central, high-throughput message broker for event streaming (Topics: `scrap-data`, `event-data`, `user-data`, `mail-data`). |
 | Data Storage                   | MySQL              | All Services              | The single source of truth for all transactional data (`eventsdb`, `usersdb`, `wishlistdb`, `recommendationdb`). |
-| Standard SQL LIKE Search       | Search Service     | Search Service            | Implements the search logic across multiple columns (as seen in your `EventRepository` query). Simpler but may face performance challenges as data grows. |
 | Containerization               | Docker / Docker Compose | All Services & Infrastructure | Used for local development, defining the entire environment, and creating deployment artifacts. |
 | Scraping Tool                  | Selenium           | Scraping Service          | Used for automated browser interaction to extract data from dynamic websites.                   |
 
 ---
 
 ---
+
+## Service Structure
+
+- **All Services (except DS):** Java Spring Boot microservices.  
+- **DS Service:** Python service leveraging LangChain for AI/NLP tasks.  
+- **Search Service:** Provides flexible SQL-like search capabilities.  
+- **Scraping Service:** Uses Selenium to fetch dynamic content from websites and provides APIs for event data.  
+- **Kafka Topics:** `scrap-data`, `event-data`, `user-data`, `mail-data`.  
+
+---
+
+## Scraping Service APIs
+
+These APIs belong to the **Scraping Service**.
+
+### 1. Get Internshala Jobs
+
+**Request:**  
+```http
+GET /api/v1/data/internshala/jobs
+
+**Response Example:**
+```json
+[
+  {
+    "event_id": 1.7598505746792433e+18,
+    "title": "Video Editor",
+    "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+    "event_link": "https://internshala.com/internship/detail/video-editor-internship-in-ahmedabad-at-ranjan-rana1756799951",
+    "location": "Ahmedabad",
+    "salary": "₹ 10,000 - 15,000 /month",
+    "start_date": "3 weeks ago",
+    "end_date": "",
+    "type": "Internship",
+    "description": "Intern responsibilities at Iravaa Media (video editing)..."
+  },
+  {
+    "event_id": 1.7598506012960074e+18,
+    "title": "Search Engine Optimization (SEO)",
+    "image_url": "https://internshala-uploads.internshala.com/logo%2Fg13qfru3a3p-27596.jpg.webp",
+    "event_link": "https://internshala.com/internship/detail/search-engine-optimization-seo-internship-in-multiple-locations-at-devakey-digital-solutions-pvt-ltd1758861418",
+    "location": "Pune, Pimpri-Chinchwad",
+    "salary": "₹ 4,000 - 5,000 /month",
+    "start_date": "1 week ago",
+    "end_date": "",
+    "type": "Internship",
+    "description": "1. Conduct client research and keyword analysis to support SEO strategies..."
+  }
+]
+
+```
+2. Get Internshala Internships
+
+Request:
+
+GET /api/v1/data/internshala/internships
+
+
+Response:
+Similar JSON structure as jobs, containing internship-specific data.
+
+3. Get DevPost Hackathons
+
+Request:
+
+GET /api/v1/data/devposts/hackathons
+
+
+Response:
+JSON array containing hackathon events scraped from DevPost.
+
+4. Publish Event to Kafka
+
+Request:
+
+POST /api/v1/data/events
+Content-Type: application/json
+
+{
+  "event_id": 1759850574679243300,
+  "title": "Sample Event",
+  "image_url": "https://example.com/logo.png",
+  "event_link": "https://example.com/event",
+  "location": "Remote",
+  "salary": "",
+  "start_date": "2025-10-07",
+  "end_date": "2025-10-15",
+  "type": "Job",
+  "description": "Sample event description."
+}
+
+
+Response Example:
+
+Event published successfully.
 
 
 
