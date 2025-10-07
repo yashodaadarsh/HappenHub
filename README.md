@@ -25,18 +25,61 @@ The system employs a **Microservices Architecture** where each business function
 
 ---
 
+## Data Transformation Example (DS Service: Input vs. Output) 
+The table below illustrates the core transformation and standardization performed by the **DS Service**. It converts the inconsistent and sometimes abbreviated raw input into a clean, parsable, and standardized output format.
+
+| Data Type | Example (Raw Input via `scrap-data`) | Example (Clean Output via `event-data`) | Transformation Focus |
+| :--- | :--- | :--- | :--- |
+| **Raw Input** | `start_date`: "Sep 09 ", `end_date`: "- Nov 01, 2025", `salary`: "$70,000" | `start_date`: "2025-09-09 00:00:00", `end_date`: "2025-11-01 23:59:59", `salary`: "Prize Pool: ₹62,10,925" | Date parsing, **USD to INR conversion**, salary normalization, text cleaning. |
+| **Job/Internship** | `start_date`: "3 weeks ago", `salary`: "₹ 10,000 - 15,000 /month" | `start_date`: "2025-10-04 10:10:32", `salary`: "₹ 10,000 - 15,000 " | Relative date conversion, currency parsing. |
+
+### Raw Input Data Example (DevPost Hackathon, via scrap-data)
+
+```json
+
+{
+  "event_id": 1.7598520980326252e+18,
+  "title": "Google Chrome Built-in AI Challenge 2025",
+  "image_url": "https://d112y698adiu2z.cloudfront.net/photos/production/challenge_thumbnails/003/687/564/datas/medium_square.png", 
+  "event_link": "https://googlechromeai2025.devpost.com/?ref_feature=challenge&ref_medium=discover",
+  "location": "Global / Remote",
+  "salary": "$70,000",
+  "start_date": "Sep 09 ",
+  "end_date": "- Nov 01, 2025",
+  "type": "Hackathon",
+  "description": "Beginner Friendly, Machine Learning/AI, Web"
+}
+```
+
+### Standardized Output Data Example (Cleaned by DS Service, via event-data)
+```json
+
+{
+  "event_id": "1759852098032625200", 
+  "title": "Google Chrome Built-in AI Challenge 2025", 
+  "image_url": "https://d112y698adiu2z.cloudfront.net/photos/production/challenge_thumbnails/003/687/564/datas/medium_square.png", 
+  "event_link": "https://googlechromeai2025.devpost.com/?ref_feature=challenge&ref_medium=discover", 
+  "location": "Global / Remote", 
+  "salary": "₹6,210,925.00", 
+  "start_date": "2025-09-09 00:00:00", 
+  "end_date": "2025-11-01 23:59:59", 
+  "type": "Hackathon", 
+  "description": "This is a global, beginner-friendly hackathon focused on Machine Learning/AI and Web technologies."
+}
+```
+
 ## Data Flow and Communication
 
 The platform's operation is defined by the lifecycle of two main entities: **Events** and **Users**.
 
 ### 1. Event Data Flow (Scrape $\rightarrow$ Publish $\rightarrow$ Consume)
 
-1.  **Ingestion:** The **Scraping Service** polls external sources and **produces** raw data to the `scrap-data` Kafka topic.
+1.  **Ingestion:** The Scraping Service automatically executes daily at 12 AM to retrieve new event data using Selenium. It also provides manual trigger APIs. The retrieved data is then produced as raw data to the scrap-data Kafka topic.
 2.  **Transformation:** The **DS Service** (Data Science/Processing) **consumes** `scrap-data`, cleans it, standardizes dates, and shortens descriptions. It then **produces** the cleaned data to the `event-data` topic.
 3.  **Distribution/Indexing:** Multiple services **consume** the final `event-data` for their specific functions:
-    * **Event Service** stores the official record in `eventsdb`.
-    * **Search Service** indexes the data in `searchdb` for fast search capabilities.
-    * **Recommendation Service** uses it to train models and generate user feeds.
+    * **Event Service** stores the official record in `eventsdb` .
+    * **Search Service** indexes the data into its `searchdb`, leveraging Standard SQL `LIKE` Search capabilities for query execution.
+    * **Recommendation Service** stores the data in `recommendationdb` to train models and generate personalized user feeds.
 
 ### 2. User/Authentication Data Flow
 
@@ -52,7 +95,7 @@ The system is composed of the following services, detailing their role and inter
 
 | Service | Primary Function | Kafka Interaction | Data Store / Communication |
 | :--- | :--- | :--- | :--- |
-| **Scraping Service** | External data extraction. | **Produces to:** `scrap-data` | N/A |
+| **Scraping Service** | External data extraction. Runs on a daily schedule (12 AM). | **Produces to:** `scrap-data` | N/A |
 | **DS Service** | Data cleaning and enrichment (description shortening, date fixing). | **Consumes from:** `scrap-data` **Produces to:** `event-data` | N/A |
 | **Event Service** | Core event data management (CRUD operations). | **Consumes from:** `event-data` | `eventsdb` (Primary DB) |
 | **Auth Service** | User authentication and identity management. | **Produces to:** `user-data` | `usersdb` |
@@ -108,8 +151,8 @@ These APIs belong to the **Scraping Service**.
 
 **Request:**  
 ```http
-GET /api/v1/data/internshala/jobs
-
+GET scrapping-service/api/v1/data/internshala/jobs
+```
 **Response Example:**
 ```json
 [
@@ -140,31 +183,87 @@ GET /api/v1/data/internshala/jobs
 ]
 
 ```
-2. Get Internshala Internships
 
-Request:
+### 2. Get Internshala Internships
 
-GET /api/v1/data/internshala/internships
+**Request:**  
+```http
+GET scrapping-service/api/v1/data/internshala/internships
+```
+
+**Response Example:**
+```json
+[
+  {
+    "event_id": 1.7598518103629379e+18,
+    "title": "Business Development Executive",
+    "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+    "event_link": "https://internshala.com/job/detail/business-development-executive-job-in-indore-at-toonzkart-ventures-private-limited1758867799",
+    "location": "Indore",
+    "salary": "₹ 3,80,000 - 4,64,000",
+    "start_date": "1 week ago",
+    "end_date": "",
+    "type": "Job",
+    "description": "As a business development executive at Toonzkart Ventures Private Limited, you will have the opportunity to work in a dynamic and fast-paced environment, where your skills in effective communication, written and spoken English proficiency, and MS Excel will be put to the test. Key Responsibilities: A. Leads calling & follow-up: 1. Demonstrate exceptional verbal and written communication abilities 2. Deliver an outstanding presentation 3. Practice active listening and empathy 4. Apply cross-cultural communication proficiency 5. Build rapport with diverse stakeholders B. Mailing: 1. Design compelling business presentations 2. Develop comprehensive business proposals 3. Visualize complex business opportunities 4. Communicate value propositions effectively 5. Demonstrate excellent prioritization and multitasking abilities 6. Show adaptability in dynamic business environments 7. Maintain meticulous attention to detail If you are a motivated individual with a passion for driving business success, we invite you to join our team and be a part of our exciting journey towards achieving our business goals. Apply now and take the next step in your career with Toonzkart Ventures Private Limited."
+  },
+  {
+    "event_id": 1.7598518110265142e+18,
+    "title": "Sales Executive",
+    "image_url": "https://internshala-uploads.internshala.com/logo%2Fex08empjmk9-15831.jpg.webp",
+    "event_link": "https://internshala.com/job/detail/sales-executive-job-in-hyderabad-at-spotlet1757013406",
+    "location": "Hyderabad",
+    "salary": "₹ 4,00,000 - 8,00,000",
+    "start_date": "3 weeks ago",
+    "end_date": "",
+    "type": "Job",
+    "description": "Key responsibilities: 1.Identify, prospect, and generate leads through various channels including referrals, networking, and real estate portals. 2.Conduct property presentations and site visits, highlighting features and benefits of villas and farmhouses. 3.Manage the entire sales cycle from lead generation to deal closure. 4.Build long-term client relationships to ensure repeat business and referrals. 5.Negotiate terms, finalize agreements, and ensure smooth transaction processes. 6.Achieve and exceed monthly/quarterly sales targets. 7.Provide accurate sales forecasts and market insights to management. 8.Maintain detailed records of interactions, leads, and closed deals in CRM. 9.Represent the company professionally at client meetings, events, and property exhibitions"
+  },
+]
+```
+
+### 3. Get DevPost Hackathons
+
+**Request:**  
+```http
+GET scrapping-service/api/v1/data/devposts/hackathons
+```
 
 
-Response:
-Similar JSON structure as jobs, containing internship-specific data.
+**Response Example:**
+```json
+[
+  {
+    "event_id": 1.7598520980326252e+18,
+    "title": "Google Chrome Built-in AI Challenge 2025",
+    "image_url": "https://d112y698adiu2z.cloudfront.net/photos/production/challenge_thumbnails/003/687/564/datas/medium_square.png",
+    "event_link": "https://googlechromeai2025.devpost.com/?ref_feature=challenge&ref_medium=discover",
+    "location": "Google",
+    "salary": "$70,000",
+    "start_date": "Sep 09 ",
+    "end_date": "- Nov 01, 2025",
+    "type": "Hackathon",
+    "description": "Beginner Friendly, Machine Learning/AI, Web"
+  },
+  {
+    "event_id": 1.759852098057366e+18,
+    "title": "AWS AI Agent Global Hackathon",
+    "image_url": "https://d112y698adiu2z.cloudfront.net/photos/production/challenge_thumbnails/003/702/784/datas/medium_square.png",
+    "event_link": "https://aws-agent-hackathon.devpost.com/?ref_feature=challenge&ref_medium=discover",
+    "location": "AWS",
+    "salary": "$45,000",
+    "start_date": "Sep 08 ",
+    "end_date": "- Oct 20, 2025",
+    "type": "Hackathon",
+    "description": "DevOps, Enterprise, Machine Learning/AI"
+  },
+]
+```
 
-3. Get DevPost Hackathons
+### 4. Publish Event to Kafka
 
-Request:
-
-GET /api/v1/data/devposts/hackathons
-
-
-Response:
-JSON array containing hackathon events scraped from DevPost.
-
-4. Publish Event to Kafka
-
-Request:
-
-POST /api/v1/data/events
+**Request:**  
+```json
+POST scrapping-service/api/v1/data/events
 Content-Type: application/json
 
 {
@@ -180,10 +279,99 @@ Content-Type: application/json
   "description": "Sample event description."
 }
 
+```
 
-Response Example:
-
+**Response Example:**
+```json
 Event published successfully.
+```
+
+
+## Event Service API Endpoints
+This section provides details and examples for the core data management API in the **Event Service**.
+
+### 1. Create Event
+**Request**
+```http
+Endpoint: event-service/api/v1/events
+
+Method: POST
+
+Role: The core service endpoint used internally (or by authorized clients) to persist standardized event data.
+```
+
+#### Request Body (Example):
+
+```json
+JSON
+{
+  "eventId": 101,
+  "title": "Spring Boot Developer Job",
+  "location": "Remote",
+  "salary": "₹ 15,00,000",
+  "start_date": "2025-11-01 09:00:00",
+  "end_date": "2025-11-30 17:00:00",
+  "type": "Job",
+  "description": "Full-stack developer opportunity..."
+}
+```
+Success Response (201 CREATED): Returns the saved EventModel object.
+
+### 2. Update Existing Event
+**Request**
+```http
+Endpoint: /events/{id}
+
+Method: PUT
+
+Success Response (200 OK): Returns the updated EventModel object.
+```
+
+### 3. Get Event by ID
+**Request**
+```http
+Endpoint: /events/{id}
+
+Method: GET
+
+Success Response (200 OK): Returns a single EventModel.
+```
+**Response**
+```JSON
+
+{
+  "event_id": 101,
+  "title": "Spring Boot Developer Job",
+  "location": "Remote",
+  "salary": "₹ 15,00,000",
+  "start_date": "2025-11-01 09:00:00",
+  "end_date": "2025-11-30 17:00:00",
+  "type": "Job",
+  "description": "Full-stack developer opportunity..."
+}
+```
+
+### 4. Get All Events
+**Request**
+```http
+Endpoint: /events
+
+Method: GET
+
+Success Response (200 OK): Returns a list of EventModel objects.
+```
+
+### 5. Get Events by List of IDs
+**Request**
+```http
+Endpoint: /events/by-ids?eventsIdList=101,102,105
+
+Method: GET
+
+Success Response (200 OK): Returns a list of EventModel objects matching the provided IDs.
+```
+
+
 
 
 
