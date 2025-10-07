@@ -267,4 +267,3 @@ dsService/HELP.md
 dsService/denv
 dsService/.gitignore
 dsService/dist
-dsService/src/.env
