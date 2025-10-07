@@ -320,7 +320,7 @@ Success Response (201 CREATED): Returns the saved EventModel object.
 ### 2. Update Existing Event
 **Request**
 ```http
-Endpoint: /events/{id}
+Endpoint: event-service/api/v1/events/{id}
 
 Method: PUT
 
@@ -330,7 +330,7 @@ Success Response (200 OK): Returns the updated EventModel object.
 ### 3. Get Event by ID
 **Request**
 ```http
-Endpoint: /events/{id}
+Endpoint: event-service/api/v1/events/{id}
 
 Method: GET
 
@@ -354,7 +354,7 @@ Success Response (200 OK): Returns a single EventModel.
 ### 4. Get All Events
 **Request**
 ```http
-Endpoint: /events
+Endpoint: event-service/api/v1/events
 
 Method: GET
 
@@ -364,7 +364,7 @@ Success Response (200 OK): Returns a list of EventModel objects.
 ### 5. Get Events by List of IDs
 **Request**
 ```http
-Endpoint: /events/by-ids?eventsIdList=101,102,105
+Endpoint: event-service/api/v1/events/by-ids?eventsIdList=101,102,105
 
 Method: GET
 
