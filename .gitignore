@@ -263,8 +263,8 @@ WishlistService/bin/
 
 
 #dsService
-dsService/HELP.md
-dsService/denv
-dsService/.gitignore
-dsService/dist
-dsService/src/.env
+DsService/HELP.md
+DsService/denv
+DsService/.gitignore
+DsService/dist
+DsService/src/.env
