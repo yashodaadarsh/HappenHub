@@ -1,4 +1,4 @@
-package com.adarsh.MailService.model;
+package org.adarsh.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.adarsh.entities.Event;
 
 import java.util.Date;
 
@@ -24,12 +25,28 @@ public class EventModel {
     private String eventLink;
     private String location;
     private String salary;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endDate;
+
     private String type;
     private String description;
 
+    public Event transformToEvent() {
+        return Event.builder()
+                .eventId(this.getEventId())
+                .title(this.getTitle())
+                .imageUrl(this.getImageUrl())
+                .eventLink(this.getEventLink())
+                .location(this.getLocation())
+                .salary(this.getSalary())
+                .type(this.getType())
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
+                .type(this.type)
+                .description(this.getDescription())
+                .build();
+    }
 }

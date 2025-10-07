@@ -1,15 +1,11 @@
-package com.adarsh.MailService.model;
+package com.adarsh.wishlist.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class NotificationModel {
     private String email;
