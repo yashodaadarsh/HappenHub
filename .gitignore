@@ -265,6 +265,5 @@ WishlistService/bin/
 #dsService
 DsService/HELP.md
 DsService/denv
-DsService/.gitignore
 DsService/dist
 DsService/src/.env
