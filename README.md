@@ -40,18 +40,18 @@ The platform's operation is defined by the lifecycle of two main entities: **Eve
 
 ## 💻 Microservices and Responsibilities
 
-The system is composed of the following services, each with a dedicated role:
+The system is composed of the following services, detailing their role and interaction with the Kafka event stream:
 
-| Service | Primary Function | Communication Pattern | Data Store |
+| Service | Primary Function | Kafka Interaction | Data Store / Communication |
 | :--- | :--- | :--- | :--- |
-| **Scraping Service** | External data extraction. | Kafka Producer | N/A |
-| **DS Service** | Data cleaning and enrichment (description shortening, date fixing). | Kafka Consumer/Producer | N/A |
-| **Event Service** | Core event data management (CRUD operations). | Kafka Consumer, HTTP API | `eventsdb` |
-| **Auth Service** | User authentication and identity management. | Kafka Producer, HTTP API | `usersdb` |
-| **Search Service** | Fast search and filtering on all events. | Kafka Consumer, HTTP API | `searchdb` (Search Index) |
-| **Recommendation Service** | Personalized event feed generation based on user preferences. | Kafka Consumer | `recommendationdb` |
-| **Wishlist Service** | Manages user-event favorites and reminder logic. | HTTP API, Dedicated DB | `wishlistdb` |
-| **Mail Service** | Sends transactional emails (e.g., expiring event reminders). | HTTP API/Kafka Consumer (triggered by Wishlist) | N/A |
+| **Scraping Service** | External data extraction. | **Produces to:** `scrap-data` | N/A |
+| **DS Service** | Data cleaning and enrichment (description shortening, date fixing). | **Consumes from:** `scrap-data` **Produces to:** `event-data` | N/A |
+| **Event Service** | Core event data management (CRUD operations). | **Consumes from:** `event-data` | `eventsdb` (Primary DB) |
+| **Auth Service** | User authentication and identity management. | **Produces to:** `user-data` | `usersdb` |
+| **Search Service** | Fast search and filtering on all events. | **Consumes from:** `event-data` | `searchdb` (Search Index) |
+| **Recommendation Service** | Personalized event feed generation based on user preferences. | **Consumes from:** `event-data`, `user-data` | `recommendationdb` |
+| **Wishlist Service** | Manages user-event favorites and reminder logic. | **Produces to:** `mail-data` (Inferred) | `wishlistdb`, HTTP call to Mail Service |
+| **Mail Service** | Sends transactional emails (e.g., expiring event reminders). | **Consumes from:** `mail-data` (Inferred) | N/A |
 
 ---
 
