@@ -81,26 +81,9 @@ The system is composed of the following services, detailing their role and inter
 | Python / LangChain             | Python / LangChain | DS Service Only           | Used for data cleaning, transformation, and complex logic involving AI/NLP.                     |
 | Asynchronous Communication     | Apache Kafka       | All Services              | The central, high-throughput message broker for event streaming (Topics: `scrap-data`, `event-data`, `user-data`, `mail-data`). |
 | Data Storage                   | MySQL              | All Services              | The single source of truth for all transactional data (`eventsdb`, `usersdb`, `wishlistdb`, `recommendationdb`). |
-| Standard SQL LIKE Search       | Search Service     | Search Service            | Implements the search logic across multiple columns (as seen in your `EventRepository` query). Simpler but may face performance challenges as data grows. |
 | Containerization               | Docker / Docker Compose | All Services & Infrastructure | Used for local development, defining the entire environment, and creating deployment artifacts. |
 
 ---
 
-## ⚡ Notes
 
-- The platform follows a **microservices architecture**, ensuring modularity and scalability.  
-- **Kafka** handles all inter-service communication asynchronously, improving performance under load.  
-- **Docker Compose** is used to orchestrate services locally, making development and testing consistent.  
 
----
-
-## 📦 Service Structure
-
-- **All Services (except DS):** Java Spring Boot microservices.  
-- **DS Service:** Python service leveraging LangChain for AI/NLP tasks.  
-- **Search Service:** Provides flexible SQL-like search capabilities.  
-- **Kafka Topics:** `scrap-data`, `event-data`, `user-data`, `mail-data`.  
-
----
-
-This stack ensures a **robust, scalable, and maintainable platform** for event discovery, processing, and recommendation.
