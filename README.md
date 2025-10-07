@@ -1,84 +1,76 @@
-# HappenHub: Event Aggregator Platform
+## Event Discovery Platform 🚀
 
-HappenHub is a modern, scalable event aggregation platform built on a **microservices architecture**. It uses an **event-driven design** with **Apache Kafka** as the central nervous system to ensure high availability, decoupling, and real-time data processing.
+This document outlines the design and architecture of the **Event Discovery Platform**, a microservices-based system built to aggregate, process, and deliver personalized event (jobs, internships, hackathons) information to users.
 
-## 🚀 Architecture Overview
+---
 
-The system is composed of several independent services that communicate primarily through asynchronous messaging (Kafka topics). This design principle ensures that failure in one service does not propagate to others, enhancing overall system resilience.
+## 🏗 System Architecture: Microservices with Event Streaming
 
-A visual representation of the design can be found [here - *Insert Link to Excalidraw or diagram image*].
+The system employs a **Microservices Architecture** where each business function is isolated into an independent service. **Apache Kafka** is central to this design, acting as the high-throughput, fault-tolerant message broker for asynchronous, decoupled communication between services.
 
-## 🧱 Core Components and Data Flow
+### Key Architectural Principles
 
-The architecture is divided into specialized services, each responsible for a single business capability and typically managing its own data store (Database per Service pattern).
+* **Decoupling:** Services communicate primarily via asynchronous **event streams (Kafka)**, preventing cascading failures and allowing independent scaling.
+* **Domain Isolation:** Each service owns its data store, ensuring autonomy and clear data boundaries (e.g., Auth Service owns `usersdb`, Event Service owns `eventsdb`).
+* **Asynchronous Processing:** Long-running tasks, like data processing (DS Service) and search indexing (Search Service), are handled asynchronously via Kafka events.
+* **Mixed Communication:** While Kafka is the backbone, direct **HTTP API calls** are used for synchronous operations, such as front-end requests to the Event or Auth services, and specific inter-service triggers (e.g., from Wishlist to Mail Service).
 
-| Service | Primary Function | Kafka Role (Topics) | Database |
+---
+
+## 🌐 Data Flow and Communication
+
+The platform's operation is defined by the lifecycle of two main entities: **Events** and **Users**.
+
+### 1. Event Data Flow (Scrape $\rightarrow$ Publish $\rightarrow$ Consume)
+
+1.  **Ingestion:** The **Scraping Service** polls external sources and **produces** raw data to the `scrap-data` Kafka topic.
+2.  **Transformation:** The **DS Service** (Data Science/Processing) **consumes** `scrap-data`, cleans it, standardizes dates, and shortens descriptions. It then **produces** the cleaned data to the `event-data` topic.
+3.  **Distribution/Indexing:** Multiple services **consume** the final `event-data` for their specific functions:
+    * **Event Service** stores the official record in `eventsdb`.
+    * **Search Service** indexes the data in `searchdb` for fast search capabilities.
+    * **Recommendation Service** uses it to train models and generate user feeds.
+
+### 2. User/Authentication Data Flow
+
+1.  **Authentication:** The **Auth Service** handles sign-up and login, managing user credentials in `usersdb`.
+2.  **Profile Events:** Upon significant changes (e.g., new user, preference update), the **Auth Service produces** a `user-data` event.
+3.  **Consumption:** The **Recommendation Service consumes** `user-data` to update user profiles and personalize recommendations.
+
+---
+
+## 💻 Microservices and Responsibilities
+
+The system is composed of the following services, each with a dedicated role:
+
+| Service | Primary Function | Communication Pattern | Data Store |
 | :--- | :--- | :--- | :--- |
-| **Scraping Service** | Ingests raw event data from external sources. | **Produces** `scrap-data` | N/A |
-| **DS Service (Data Standardization)** | Cleans, normalizes, and validates raw event data. | **Consumes** `scrap-data`, **Produces** `event-data` | N/A |
-| **Event Service** | Core business logic and persistence for standardized events. | **Consumes** `event-data` | **eventsdb** (Main Event Data Store) |
-| **Auth Service** | Manages user registration, login, and authorization. | **Produces** `user-data` | **usersdb** |
-| **Search Service** | Indexes event data to provide fast, full-text search capabilities. | **Consumes** `event-data` | **searchdb** (Search Engine) |
-| **Recommendation Service** | Generates personalized event recommendations for users. | **Consumes** `event-data` & `user-data` | **recomandationdb** |
-| **Wishlist Service** | Manages user-specific lists of saved/favorited events. | **Produces** `mail-data` (for event alerts) | **wishlistdb** |
-| **Mail Service** | Handles all asynchronous communication with users (e.g., alerts, digests). | **Consumes** `mail-data` | N/A |
+| **Scraping Service** | External data extraction. | Kafka Producer | N/A |
+| **DS Service** | Data cleaning and enrichment (description shortening, date fixing). | Kafka Consumer/Producer | N/A |
+| **Event Service** | Core event data management (CRUD operations). | Kafka Consumer, HTTP API | `eventsdb` |
+| **Auth Service** | User authentication and identity management. | Kafka Producer, HTTP API | `usersdb` |
+| **Search Service** | Fast search and filtering on all events. | Kafka Consumer, HTTP API | `searchdb` (Search Index) |
+| **Recommendation Service** | Personalized event feed generation based on user preferences. | Kafka Consumer | `recommendationdb` |
+| **Wishlist Service** | Manages user-event favorites and reminder logic. | HTTP API, Dedicated DB | `wishlistdb` |
+| **Mail Service** | Sends transactional emails (e.g., expiring event reminders). | HTTP API/Kafka Consumer (triggered by Wishlist) | N/A |
 
 ---
 
-## 🔗 Data Communication Summary
+## 🔗 Kafka Topics (Asynchronous Contracts)
 
-### Asynchronous Flow (Kafka)
-
-The bulk of the system communication is handled by Kafka, enabling decoupling and high-throughput data processing.
-
-| Producer | Topic Name | Consumer(s) |
-| :--- | :--- | :--- |
-| **Scraping Service** | `scrap-data` | DS Service |
-| **DS Service** | `event-data` | Event Service, Search Service, Recommendation Service |
-| **Auth Service** | `user-data` | Recommendation Service |
-| **Wishlist Service** | `mail-data` | Mail Service |
-
-### Synchronous Flow (HTTP)
-
-Services that require real-time client interaction (like user-facing APIs) use synchronous HTTP/REST communication.
-
-* **Client (via API Gateway)** ↔ **Wishlist Service**: For adding, removing, and viewing events on a user's wishlist.
-* **Wishlist Service** ↔ **Event Service**: (Likely) To retrieve real-time event details based on Wishlist IDs.
+| Topic Name | Producer Service(s) | Consumer Service(s) | Event Type |
+| :--- | :--- | :--- | :--- |
+| **`scrap-data`** | Scraping Service | DS Service | Raw, uncleaned event JSON. |
+| **`event-data`** | DS Service | Event, Search, Recommendation Services | Finalized, standardized event object. |
+| **`user-data`** | Auth Service | Recommendation Service | User profile or preference changes. |
+| **`mail-data`** | Wishlist Service (Inferred) | Mail Service (Inferred) | Payload to trigger an email send. |
 
 ---
 
-## 🛠️ Technology Stack (Suggested)
+## 🛠 Technology Stack (Placeholder)
 
-| Category | Technology | Rationale |
-| :--- | :--- | :--- |
-| **Messaging** | **Apache Kafka** | Event-driven architecture, decoupling, and fault tolerance. |
-| **Service Framework** | Python (FastAPI/Flask) / Go / Java (Spring Boot) | Flexibility and performance for microservices. |
-| **Primary Database** | PostgreSQL/MySQL | Reliability and transactional integrity for core event data (`eventsdb`). |
-| **Search Database** | Elasticsearch/Solr | Optimized for full-text and complex search queries (`searchdb`). |
-| **User/Auth DB** | MongoDB/PostgreSQL | Scalable and secure user data management (`usersdb`). |
-
-## 💡 Key Design Decisions
-
-1.  **Event-Driven Core:** All major data changes (scraped data, new events, user updates) are published as immutable events to Kafka. This allows services to react autonomously.
-2.  **Separate Search Engine:** Indexing event data in a dedicated `searchdb` (e.g., Elasticsearch) offloads complex search queries from the primary `eventsdb`, ensuring the Event Service remains responsive.
-3.  **Specialized Recommendation Engine:** The Recommendation Service uses a stream of `event-data` and `user-data` to continuously update recommendations, storing complex models or pre-calculated results in its dedicated database.
-
----
-
-## 🏁 Getting Started
-
-To run the HappenHub platform locally:
-
-1.  **Prerequisites:** Docker, Docker Compose, Python (or chosen language runtime).
-2.  **Clone the Repository:**
-    ```bash
-    git clone [Your Repository URL]
-    cd happenhub
-    ```
-3.  **Start Infrastructure (Kafka, Databases):**
-    ```bash
-    docker-compose up -d kafka zookeeper eventsdb usersdb ...
-    ```
-4.  **Run Services:** Navigate to each service directory and follow its local run instructions (e.g., `python main.py` or similar).
-
-***
+* **Message Broker:** Apache Kafka
+* **Containerization:** Docker, Docker Compose
+* **Databases:**
+    * **Transactional:** PostgreSQL/MySQL (for `eventsdb`, `usersdb`, etc.)
+    * **Search:** ElasticSearch/Solr (for `searchdb`)
+* **Microservice Frameworks:** (Details to be provided per service, e.g., Spring Boot, GoLang, Python/Flask)
