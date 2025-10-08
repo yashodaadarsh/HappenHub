@@ -22,7 +22,7 @@ public class EventDataConsumer
     @KafkaListener(topics = "${spring.kafka.topic-json.name}", groupId = "${spring.kafka.consumer.group-id}")
     public void listen(EventModel eventData) {
         try{
-            eventService.createOrUpdateUser(eventData);
+            eventService.createOrUpdateEvent(eventData);
         }catch(Exception ex){
             ex.printStackTrace();
             System.out.println("ScrapingServiceConsumer: Exception is thrown while consuming kafka event");

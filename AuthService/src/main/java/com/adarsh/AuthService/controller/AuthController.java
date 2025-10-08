@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequestMapping("auth-service/api/v1")
 public class AuthController {
@@ -64,4 +67,20 @@ public class AuthController {
         UserDetailsDTO updatedUser = customUserDetailsService.update( authRequest );
         return ResponseEntity.ok(updatedUser);
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<?> ping(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Not authenticated");
+        }
+
+        String username = authentication.getName();
+
+        Map<String, String> responseBody = Collections.singletonMap("email", username);
+
+        return ResponseEntity.ok().body(responseBody);
+    }
+    
 }

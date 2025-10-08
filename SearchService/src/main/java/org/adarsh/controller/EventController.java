@@ -10,54 +10,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/event")
+@RequestMapping("search-service/api/v1/events")
 public class EventController {
 
     @Autowired
     private EventService eventService;
 
-    @PostMapping("/createupdate")
-    public ResponseEntity<EventModel> createUpdate(@RequestBody EventModel eventModel ){
+    @PostMapping
+    public ResponseEntity<EventModel> createOrUpdateEvent(@RequestBody EventModel eventModel ){
         try{
-            EventModel event = eventService.createOrUpdateUser(eventModel);
+            EventModel event = eventService.createOrUpdateEvent(eventModel);
             return new ResponseEntity<>(event, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventModel> getEvent(@PathVariable Long id){
+    public ResponseEntity<EventModel> getEventById(@PathVariable Long id){
         try{
             EventModel event = eventService.getEvent(id);
-            return new ResponseEntity<>(event,HttpStatus.OK);
+            return ResponseEntity.ok(event); 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<EventModel>> getAllEvent(){
+    @GetMapping("/all")
+    public ResponseEntity<List<EventModel>> getAllEvents(){
         List<EventModel> events = eventService.findAll();
-        return new ResponseEntity<>(events,HttpStatus.OK);
+        return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/getpage")
-    public ResponseEntity<List<EventModel>> getEventsWithPagination(@RequestParam int page , @RequestParam int size ){
+    @GetMapping("/paged")
+    public ResponseEntity<List<EventModel>> getEventsWithPagination(
+            @RequestParam(defaultValue = "0") int page , 
+            @RequestParam(defaultValue = "10") int size ){
+        
         List<EventModel> events = eventService.getEventsWithPagination(page,size);
-        return new ResponseEntity<>(events,HttpStatus.OK);
+        return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/get/{type}")
-    public ResponseEntity<List<EventModel>> findByType(@PathVariable String type ){
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<EventModel>> getEventsByType(@PathVariable String type ){
         List<EventModel> events = eventService.findByType(type);
-        return new ResponseEntity<>(events,HttpStatus.OK);
+        return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/search/{query}")
-    public ResponseEntity<?> searchQuery( @PathVariable String query ){
-        List<EventModel> events = eventService.searchQuery( query );
-        return new ResponseEntity<>(events,HttpStatus.OK);
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuery(@RequestParam String q ){
+        List<EventModel> events = eventService.searchQuery( q );
+        return ResponseEntity.ok(events);
     }
-
 }

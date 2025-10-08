@@ -25,7 +25,7 @@ public class EventService
     @Autowired
     private final EventRepository eventRepository;
 
-    public EventModel createOrUpdateUser(EventModel eventModel){
+    public EventModel createOrUpdateEvent(EventModel eventModel){
 
         UnaryOperator<Event> updatingEvent = event -> {
             updateEvent(event,eventModel);

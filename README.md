@@ -733,3 +733,133 @@ X-email: john.doe@example.com
     }
 ]
 ```
+
+## Search Service API Endpoints
+
+This service is the primary source for **delivering event data to the frontend/website**. It provides fast indexing, search, and flexible filtering capabilities on all events.
+
+| Endpoint | Method | Role | Success Status |
+| :--- | :--- | :--- | :--- |
+| **`search-service/api/v1/events`** | **POST** | **(Developer/Testing)** Manually receives and persists a cleaned event object directly to the local `searchdb` .| `200 OK` |
+| **`search-service/api/v1/events/{id}`** | **GET** | Retrieves a single indexed event by its ID. Used to load the **Event Detail Page** on the website. | `200 OK` |
+| **`search-service/api/v1/events/all`** | **GET** | Retrieves all indexed events (unpaginated). Used by the frontend for simple lists or **internal audit/testing**. | `200 OK` |
+| **`search-service/api/v1/events/paged`** | **GET** | Retrieves a paginated list of all events. Used to display the **main event feed** or browsable lists. | `200 OK` |
+| **`search-service/api/v1/events/type/{type}`** | **GET** | Retrieves all events matching a specific event type (e.g., Job, Internship, Hackathon). Used for **Type Filtering** on the website. | `200 OK` |
+| **`search-service/api/v1/events/search`** | **GET** | Performs a full-text search across all event fields. Used to power the website's **Search Results Page**. | `200 OK` |
+
+-----
+
+### 1\. Create or Update Event Index (Developer/Testing)
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events
+
+Method: POST
+
+Role: An internal endpoint used **strictly for manual data injection** to verify data persistence in the `searchdb`. It does not interact with the Kafka topics, as data is consumed asynchronously.
+```
+
+#### Request Body (Example):
+
+```json
+{
+  "event_id": 1759850574679243300,
+  "title": "Spring Boot Developer Job",
+  "location": "Remote",
+  "salary": "₹ 15,00,000",
+  "start_date": "2025-11-01 09:00:00",
+  "end_date": "2025-11-30 17:00:00",
+  "type": "Job",
+  "description": "Full-stack developer opportunity..."
+}
+```
+
+**Success Response (200 OK):** Returns the persisted `EventModel` object.
+
+```json
+{
+  "event_id": 1759850574679243300,
+  "title": "Spring Boot Developer Job",
+  "location": "Remote",
+  "salary": "₹ 15,00,000",
+  "start_date": "2025-11-01 09:00:00",
+  "end_date": "2025-11-30 17:00:00",
+  "type": "Job",
+  "description": "Full-stack developer opportunity..."
+}
+```
+
+### 2\. Get Single Event by ID
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events/{id}
+
+Method: GET
+
+Role: Used by the frontend to fetch specific event details, typically for the detail page.
+```
+
+### 3\. Get All Events (Unpaginated)
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events/all
+
+Method: GET
+
+Role: Retrieves a complete list of all events.
+```
+
+### 4\. Get Events with Pagination
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events/paged
+
+Method: GET
+
+Role: Retrieves a paginated list of all events, suitable for displaying the main browsable feed on the website.
+```
+
+#### Query Parameters:
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `page` | Integer | 0 | The page number to retrieve. |
+| `size` | Integer | 10 | The number of events per page. |
+
+### 5\. Filter Events by Type
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events/type/{type}
+
+Method: GET
+
+Role: Filters and retrieves all events matching the specified event type (e.g., `Job`, `Internship`).
+```
+
+### 6\. Search Query (Full-Text Search)
+
+**Request**
+
+```http
+Endpoint: search-service/api/v1/events/search
+
+Method: GET
+
+Role: Executes a full-text search on the indexed event data, powering the site's primary search bar functionality.
+```
+
+#### Query Parameters:
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `q` | String | *None* | The full-text search query string (e.g., `Java Developer`). |
