@@ -466,6 +466,7 @@ This section provides details and examples for the authentication and user profi
 | `auth-service/api/v1/login` | **POST** | Authenticates a user and returns their profile with a JWT. | `200 OK` |
 | `auth-service/api/v1/profile` | **GET** | Retrieves the details of the currently authenticated user. | `200 OK` |
 | `auth-service/api/v1/profile` | **PATCH** | Updates the profile details (e.g., name, address, preferences) of the authenticated user. | `200 OK` |
+| **`auth-service/api/v1/ping`** | **GET** | Checks the validity of the current user's session/JWT and returns the authenticated user's email. | `200 OK` |
 
 ### 1\. Register a New User (Sign Up)
 
@@ -600,7 +601,31 @@ Role: Updates the profile details. Only fields present in the request body will 
   "preferences": ["INTERNSHIP","JOB","HACKATHON"]
 }
 ```
+### 5\. Check Session Validity (Ping)
 
+**Request**
+
+```http
+Endpoint: auth-service/api/v1/ping
+
+Method: GET
+
+Role: A lightweight endpoint to quickly verify if the provided JWT/session token is valid and returns the email of the authenticated user.
+```
+
+**Success Response (200 OK):** Returns the email of the authenticated user.
+
+```json
+{
+  "email": "john.doe@example.com"
+}
+```
+
+**Failure Response (401 UNAUTHORIZED):** If no valid token is present.
+
+```json
+"Not authenticated"
+```
 
 -----
 
