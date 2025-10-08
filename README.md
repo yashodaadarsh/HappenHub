@@ -102,7 +102,7 @@ The system is composed of the following services, detailing their role and inter
 | **Search Service** | Fast search and filtering on all events. | **Consumes from:** `event-data` | `searchdb` (Search Index) |
 | **Recommendation Service** | Personalized event feed generation based on user preferences. | **Consumes from:** `event-data`, `user-data` | `recommendationdb` |
 | **Wishlist Service** | Manages user-event favorites and reminder logic. Runs daily at 12 AM to check expiring events. | **Produces to:** `mail-data` | `wishlistdb`, HTTP call to Event Service |
-| **Mail Service** | Sends transactional emails (e.g., expiring event reminders). | **Consumes from:** `mail-data` (Inferred) | N/A |
+| **Mail Service** | Sends transactional emails (e.g., expiring event reminders). | **Consumes from:** `mail-data` | N/A |
 
 ---
 
