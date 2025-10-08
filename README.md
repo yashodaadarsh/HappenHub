@@ -826,6 +826,26 @@ Endpoint: search-service/api/v1/events/{id}
 Method: GET
 
 Role: Used by the frontend to fetch specific event details, typically for the detail page.
+
+Example:-
+  Endpoint: search-service/api/v1/events/1759638359989643238
+
+```
+
+**Response**
+```json
+{
+    "event_id": 1759638359989643238,
+    "title": "Travel Companion (PA)",
+    "image_url": "https://internshala-uploads.internshala.com/logo%2F648984936ecf71686733971.png.webp",
+    "event_link": "https://internshala.com/internship/detail/travel-companion-pa-internship-in-multiple-locations-at-wehire-talent-solutions1758018907",
+    "location": "Mumbai, Virar, Vasai, Mira Bhayandar, Vasai-Virar (Hybrid)",
+    "salary": "₹ 5,000 /month",
+    "start_date": "2025-09-21 10:04:05",
+    "end_date": "2025-10-31 23:59:59",
+    "type": "Internship",
+    "description": "Assist clients with travel planning, including booking flights, accommodations, and activities. Provide on-the-ground support during travel, ensuring clients' needs are met. Communicate with clients and vendors to coordinate travel arrangements. Utilize networking skills to build relationships with travel industry partners. Analyze data and metrics to optimize conversion rates and improve client satisfaction. Implement time management strategies to efficiently handle multiple client requests. Provide exceptional customer service and support to enhance the overall travel experience."
+}
 ```
 
 ### 3\. Get All Events (Unpaginated)
@@ -838,6 +858,48 @@ Endpoint: search-service/api/v1/events/all
 Method: GET
 
 Role: Retrieves a complete list of all events.
+```
+
+**Response**
+```json
+[
+  {
+        "event_id": 1759638360008494376,
+        "title": "UI/UX Design",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/ui-ux-design-internship-in-ahmedabad-at-eshiabim1759423117",
+        "location": "Ahmedabad",
+        "salary": "₹ 13,000 - 15,000 /month",
+        "start_date": "2025-10-03 10:04:37",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "As a UI/UX Design Intern, collaborate to design user-centric interfaces for web-based dashboards, document visualization, and translation workflow systems. Gain experience turning complex AI outputs into intuitive interfaces. Responsibilities include designing wireframes, prototypes, and UI screens for web/mobile, translating requirements into interactive designs, conducting user research/testing, creating design documentation, and improving existing dashboards. Explore AI-driven UX patterns. Requirements: Degree in Design/HCI. Strong understanding of design principles, typography, color theory. Basic user research/usability testing knowledge. Proficiency in Figma/Adobe XD. Good communication and collaboration skills. Eagerness to learn AI-powered applications."
+    },
+    {
+        "event_id": 1759638360013414534,
+        "title": "Visual Designer – Graphic & Video",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F62998f872067e1654230919.png.webp",
+        "event_link": "https://internshala.com/internship/detail/visual-designer--graphic-video-internship-in-mohali-at-alphanumeric-ideas-private-limited1759307016",
+        "location": "Mohali",
+        "salary": "₹ 3,000 - 6,000 /month",
+        "start_date": "2025-10-02 10:04:45",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "As a Visual Designer – Graphic & Video intern at Alphanumeric Ideas Private Limited, you will showcase creativity and design skills. Proficient in Adobe Illustrator, InDesign, Canva, Figma, After Effects, Premiere Pro, and Final Cut Pro. Responsibilities include collaborating on graphics for marketing, developing engaging video content, assisting with brand identity, participating in brainstorming, staying updated on design trends, managing projects, and providing feedback. This role offers hands-on experience in visual design."
+    },
+    {
+        "event_id": 1759638360018507803,
+        "title": "Tele Fundraising",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F644777764f8411682405238.jpg.webp",
+        "event_link": "https://internshala.com/internship/detail/work-from-home-part-time-tele-fundraising-internship-at-she-can-foundation1759382729",
+        "location": "Work from home",
+        "salary": "₹ 1,500 - 10,000 lump sum",
+        "start_date": "2025-10-03 10:04:52",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "The She Can Foundation seeks a highly motivated tele-fundraising intern to raise funds for education and development projects in rural India. Responsibilities include executing direct tele-fundraising outreach to potential donors, generating interest through tele-calling, maintaining daily call logs, identifying and building donor relationships, participating in team meetings, following up on donations, and monitoring fundraising progress. This internship offers real-world experience in development and fundraising, contributing to a worthwhile cause."
+    }
+]
 ```
 
 ### 4\. Get Events with Pagination
@@ -859,6 +921,54 @@ Role: Retrieves a paginated list of all events, suitable for displaying the main
 | `page` | Integer | 0 | The page number to retrieve. |
 | `size` | Integer | 10 | The number of events per page. |
 
+**Example**
+
+```http
+  GET search-service/api/v1/events/paged?page=10&size=3
+```
+
+**Response**
+```json
+[
+    {
+        "event_id": 1759638359989643238,
+        "title": "Travel Companion (PA)",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F648984936ecf71686733971.png.webp",
+        "event_link": "https://internshala.com/internship/detail/travel-companion-pa-internship-in-multiple-locations-at-wehire-talent-solutions1758018907",
+        "location": "Mumbai, Virar, Vasai, Mira Bhayandar, Vasai-Virar (Hybrid)",
+        "salary": "₹ 5,000 /month",
+        "start_date": "2025-09-21 10:04:05",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Assist clients with travel planning, including booking flights, accommodations, and activities. Provide on-the-ground support during travel, ensuring clients' needs are met. Communicate with clients and vendors to coordinate travel arrangements. Utilize networking skills to build relationships with travel industry partners. Analyze data and metrics to optimize conversion rates and improve client satisfaction. Implement time management strategies to efficiently handle multiple client requests. Provide exceptional customer service and support to enhance the overall travel experience."
+    },
+    {
+        "event_id": 1759638359994504110,
+        "title": "Journalism",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F61e823cf73cfe1642603471.png.webp",
+        "event_link": "https://internshala.com/internship/detail/anchoring-internship-in-lucknow-at-advotalks1758525758",
+        "location": "Lucknow",
+        "salary": "₹ 7,000 /month",
+        "start_date": "2025-09-28 10:04:12",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Responsibilities include managing the company’s portal by updating content, monitoring dashboard metrics, ensuring functionality, and handling user/admin requests. The intern will also be responsible for creating news content, which involves researching trending topics, writing and editing articles, and ensuring timely publication. Additionally, the role includes assisting in the video content making process, covering ideation, scripting, shooting, basic editing, reviewing drafts, and optimizing videos for various platforms."
+    },
+    {
+        "event_id": 1759638359998055036,
+        "title": "Content and Social Media Marketing",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F8hf1insp1qj-37990.png.webp",
+        "event_link": "https://internshala.com/internship/detail/part-time-content-and-social-media-marketing-internship-in-multiple-locations-at-good-eatco1759064921",
+        "location": "Dombivli, Dombivili",
+        "salary": "₹ 4,000 - 5,000 /month",
+        "start_date": "2025-09-29 10:04:23",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Good Eatco seeks a dynamic Content and Social Media Marketing intern. Gain hands-on experience in social media marketing, digital marketing tools, and content writing. Key Responsibilities include developing engaging social media content, assisting with marketing strategies, monitoring performance, collaborating on creative ideas, writing blog posts, staying updated on trends, and supporting the marketing team. Ideal for creative, driven individuals passionate about food and marketing."
+    }
+]
+```
+
 ### 5\. Filter Events by Type
 
 **Request**
@@ -871,20 +981,320 @@ Method: GET
 Role: Filters and retrieves all events matching the specified event type (e.g., `Job`, `Internship`).
 ```
 
+**Response**
+```json
+[
+  {
+        "event_id": 1759638360106310798,
+        "title": "Client Servicing",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/client-servicing-internship-in-mumbai-at-publicis-groupe1759326857",
+        "location": "Mumbai",
+        "salary": "₹ 10,000 - 15,000 /month",
+        "start_date": "2025-10-02 10:07:00",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Assist account management in client projects and campaigns. Coordinate creative, strategy, and production for timely delivery. Prepare client presentations and reports. Research brands, competitors, and market trends. Support client communication, organize review meetings, track project status, and maintain documentation. Learn campaign development and execution."
+    },
+    {
+        "event_id": 1759638360109917538,
+        "title": "Influencer Marketing",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2Ff5meqcg4tut-4002.png.webp",
+        "event_link": "https://internshala.com/internship/detail/influencer-marketing-internship-in-gurgaon-at-cars24-services-private-limited1759318185",
+        "location": "Gurgaon",
+        "salary": "₹ 15,000 - 20,000 /month",
+        "start_date": "2025-10-02 10:07:07",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Seeking a motivated Influencer Marketing Intern to assist in planning, executing, and managing influencer campaigns. Responsibilities include researching and identifying influencers, assisting outreach, coordinating campaigns, tracking performance, and collaborating on strategies. Key skills: strong communication, passion for social media and digital marketing, creativity, and ability to work in a fast-paced environment. Basic understanding of influencer marketing tools is a plus. Ideal for recent graduates in Marketing or Communications with a strong interest in influencer marketing."
+    },
+    {
+        "event_id": 1759638360114539921,
+        "title": "AI Applications",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F60eec5a740b7d1626260903.jpg.webp",
+        "event_link": "https://internshala.com/internship/detail/ai-applications-internship-in-gurgaon-at-paracoat-products-limited1759314723",
+        "location": "Gurgaon",
+        "salary": "₹ 10,000 /month",
+        "start_date": "2025-10-02 10:07:17",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Collaborate with cross-functional teams to understand their workflows. Identify areas where AI-powered solutions (automation, data analysis, content creation, predictive tools, chatbots) can improve efficiency, speed, and accuracy. Research and evaluate available AI tools in the market, mapping them to relevant use cases. Conduct pilot trials with selected teams on specific AI tools and measure impact. Prepare easy-to-understand guides and training material for team members to adopt AI tools. Document findings, recommendations, and progress in structured reports."
+    }
+]
+```
+
+
 ### 6\. Search Query (Full-Text Search)
 
 **Request**
 
 ```http
-Endpoint: search-service/api/v1/events/search
+Endpoint: search-service/api/v1/events/search/{query}
 
 Method: GET
 
-Role: Executes a full-text search on the indexed event data, powering the site's primary search bar functionality.
+Role: Executes a full-text search on the event data, powering the site's primary search bar functionality.
+
+Example:
+  search-service/api/v1/events/search/web
+
+```
+**Response**
+```json
+[
+    {
+        "event_id": 8,
+        "title": "Business Development Executive",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/business-development-executive-job-in-thane-at-antraweb-technologies-private-limited1758709434",
+        "location": "Thane, Mumbai",
+        "salary": "₹ 4,40,000 - 5,50,000",
+        "start_date": "2025-09-26 21:56:57",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Job",
+        "description": "Antraweb Technologies Pvt Ltd is seeking a Business Development Executive (Antrapreneur) for B2B/corporate sales. Responsibilities include identifying potential customers through cold calling, generating and working on leads, visiting clients to provide solutions and support, conducting product demonstrations, and closing deals with strong negotiation skills. The role requires achieving sales targets and maintaining a strong work ethic. The ideal candidate will establish contact and develop relationships with prospects. Benefits include a healthy work environment, rich B2B sales experience, interaction with company owners & decision-makers, and learning new-age digital economy products like ERP, CRM, and Cloud Computing. Lucrative incentives, product training, and growth opportunities are provided."
+    },
+    {
+        "event_id": 67,
+        "title": "Junior Marketing Associate - Digital Events",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/junior-marketing-associate-digital-events-job-in-bangalore-at-scaler1758542435",
+        "location": "Bangalore",
+        "salary": "₹ 4,00,000 - 6,00,000",
+        "start_date": "2025-09-26 22:00:00",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Job",
+        "description": "Key responsibilities include moderating and hosting digital events like free classes and masterclasses. Engage with potential learners as the first point of contact, communicating via email and WhatsApp. Collaborate with product, creative, sales, and marketing teams to execute events seamlessly. Highlight Scaler’s value propositions and drive registrations, attendance, and audience experience to contribute to sales. Utilize CRM platforms (e.g., WebEngage, MoEngage) for communication and lead management. Manage operational elements like event setup, reporting, and follow-ups. Assist with marketing tasks, including email campaigns and content development, while maintaining brand image."
+    },
+    {
+        "event_id": 1759638358041797766,
+        "title": "Video Editing/Making",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F614e070b58af31632503563.png.webp",
+        "event_link": "https://internshala.com/internship/detail/video-editing-making-internship-in-raipur-at-setmycart1759489610",
+        "location": "Raipur, Devpuri (Hybrid)",
+        "salary": "₹5000",
+        "start_date": "2025-10-04 10:03:54",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "SetMyCart seeks a talented Video Editor/Graphic Design intern. Responsibilities include editing and producing high-quality video and graphic content for web and social media. Collaborate with the marketing team on creative concepts. Utilize skills in Adobe Premiere Pro, Final Cut Pro, Adobe Photoshop, and Canva for video enhancement, graphics, and animations. Assist with social media marketing by creating video ads and promotional content. Stay updated on industry trends. The ideal candidate is passionate about video editing and eager to gain hands-on experience in a fast-paced environment."
+    },
+    {
+        "event_id": 1759638360003630720,
+        "title": "Graphic Design",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/graphic-design-internship-in-gurgaon-at-ambrosia-botanical1759310569",
+        "location": "Gurgaon",
+        "salary": "₹ 5,000 - 12,000 /month",
+        "start_date": "2025-10-02 10:04:31",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Assist in creating graphics for social media, presentations, websites, and marketing materials. Learn and contribute to design projects involving 3D graphics, animations, and short-form video content. Support in developing visuals like brochures, flyers, and promotional creatives. Translate simple briefs into creative design concepts. Take part in brainstorming sessions and provide fresh design ideas."
+    },
+    {
+        "event_id": 1759638360008494376,
+        "title": "UI/UX Design",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/ui-ux-design-internship-in-ahmedabad-at-eshiabim1759423117",
+        "location": "Ahmedabad",
+        "salary": "₹ 13,000 - 15,000 /month",
+        "start_date": "2025-10-03 10:04:37",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "As a UI/UX Design Intern, collaborate to design user-centric interfaces for web-based dashboards, document visualization, and translation workflow systems. Gain experience turning complex AI outputs into intuitive interfaces. Responsibilities include designing wireframes, prototypes, and UI screens for web/mobile, translating requirements into interactive designs, conducting user research/testing, creating design documentation, and improving existing dashboards. Explore AI-driven UX patterns. Requirements: Degree in Design/HCI. Strong understanding of design principles, typography, color theory. Basic user research/usability testing knowledge. Proficiency in Figma/Adobe XD. Good communication and collaboration skills. Eagerness to learn AI-powered applications."
+    },
+    {
+        "event_id": 1759638360080561835,
+        "title": "Content Writing",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2Fi1sdlrceh7p-20020.jpg.webp",
+        "event_link": "https://internshala.com/internship/detail/work-from-home-content-writing-internship-at-marpu-foundation1759551434",
+        "location": "Work from home",
+        "salary": "Unpaid",
+        "start_date": "2025-10-04 10:06:20",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Marpu Foundation seeks a dynamic Content Writing intern. Responsibilities include creating engaging content for websites/social media, conducting research, collaborating on ideas, editing and proofreading, assisting with content planning, and staying updated on industry trends. Contribute to the foundation's success through writing and creativity. Ideal candidates are passionate about writing, have a strong command of English, and are eager to learn and grow. Make a difference through words in the nonprofit sector. Apply now."
+    },
+    {
+        "event_id": 1759638360084662360,
+        "title": "E-Commerce Catalog Management",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/e-commerce-catalog-management-internship-in-pune-at-firstcrycom1759436619",
+        "location": "Pune",
+        "salary": "₹ 9,000 /month",
+        "start_date": "2025-10-03 10:06:27",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Producing engaging and target audience-oriented content with basic knowledge of keyword placement. Working around images and checking them while working on the product description is mandatory, ensuring images are up to website standards. Uploading videos on YouTube for different products listed on the website."
+    },
+    {
+        "event_id": 1759638360168857388,
+        "title": "Web Development",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/digital-marketing-internship-in-mumbai-at-thomas-cook1759217223",
+        "location": "Mumbai",
+        "salary": "₹ 5,000 - 5,001 /month",
+        "start_date": "2025-10-01 10:08:32",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Design, develop, and debug web applications using PHP and MySQL. Integrate back-end services with PHP/JavaScript-based front-end systems. Collaborate with the team to manage, optimize, and customize web applications. Create and maintain technical documentation."
+    },
+    {
+        "event_id": 1759638360260337828,
+        "title": "Event Anchoring & Presenter",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2Fi1sdlrceh7p-20020.jpg.webp",
+        "event_link": "https://internshala.com/internship/detail/work-from-home-part-time-event-anchoring-presenter-internship-at-marpu-foundation1759053168",
+        "location": "Work from home",
+        "salary": "₹ 2,000 - 25,000 /month",
+        "start_date": "2025-09-29 10:09:42",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Marpu Foundation seeks charismatic anchors to host and present online/offline events, webinars, and volunteer meet-ups. Responsibilities include being an energetic MC, introducing speakers, leading ice-breaking sessions, facilitating group discussions, and maintaining high energy. An optional task is to assist in writing event scripts. This role offers the chance to build a personal brand, earn performance-based income (₹1,000 - ₹2,000 per event), gain a Certificate of Excellence in Leadership & Hosting, and receive a Letter of Recommendation for top performers. Flexible hours are available to accommodate college schedules, allowing interns to build a public portfolio of hosting videos."
+    }
+]
 ```
 
-#### Query Parameters:
 
-| Parameter | Type | Default | Description |
+
+
+
+
+-----
+
+## Wishlist Service API Endpoints
+
+This service is responsible for managing a user's collection of saved or "wishlisted" events. It uses the `X-email` header for user identification to manage their favorites and ultimately produces messages to the `mail-data` Kafka topic for reminders.
+
+| Endpoint | Method | Role | Success Status |
 | :--- | :--- | :--- | :--- |
-| `q` | String | *None* | The full-text search query string (e.g., `Java Developer`). |
+| `wishlist-service/api/v1/wishlist/events/{eventId}` | **POST** | Adds a specified event to the authenticated user's wishlist (and creates the wishlist if it doesn't exist). | `200 OK` |
+| `wishlist-service/api/v1/wishlist/events/{id}` | **PATCH** | Removes an event from the authenticated user's wishlist. | `200 OK` |
+| `wishlist-service/api/v1/wishlist/events` | **GET** | Retrieves the full event details for all events in the user's wishlist. (Requires internal **HTTP call** to the Event Service). | `200 OK` (or `404 NOT FOUND` if no wishlist exists) |
+
+-----
+
+### 1\. Add Event to Wishlist
+
+**Request**
+
+```http
+Endpoint: wishlist-service/api/v1/wishlist/events/{eventId}
+
+Method: POST
+
+Role: Adds a specific event ID to the user's list of favorites.
+```
+
+#### Request Headers & Parameters:
+
+| Header/Param | Type | Description |
+| :--- | :--- | :--- |
+| `X-email` (Header) | String | **Required.** Email of the authenticated user. |
+| `eventId` (Path Param) | Long | **Required.** The ID of the event to add. |
+
+**Success Response (200 OK):** Returns the updated `UserWishlist` object (containing the list of all saved IDs).
+
+**Response**
+```json
+{
+    "emailId": "example@gmail.com",
+    "events": [
+        {
+            "id": 1759638504360791743
+        },
+        {
+            "id": 1759638504330052006
+        },
+        {
+            "id": 1759638504320308088
+        }
+    ]
+}
+```
+-----
+
+### 2\. Remove Event from Wishlist
+
+**Request**
+
+```http
+Endpoint: wishlist-service/api/v1/wishlist/events/{id}
+
+Method: PATCH
+
+Role: Removes an event from the authenticated user's wishlist.
+```
+
+#### Request Headers & Parameters:
+
+| Header/Param | Type | Description |
+| :--- | :--- | :--- |
+| `X-email` (Header) | String | **Required.** Email of the authenticated user. |
+| `id` (Path Param) | Long | **Required.** The ID of the event to remove. |
+
+**Success Response (200 OK):** Returns the updated `UserWishlist` object.
+
+**Response**
+```json
+{
+    "emailId": "example@gmail.com",
+    "events": [
+        {
+            "id": 1759638504360791743
+        },
+        {
+            "id": 1759638504330052006
+        }
+    ]
+}
+```
+
+-----
+
+### 3\. Get All Wishlist Events
+
+**Request**
+
+```http
+Endpoint: wishlist-service/api/v1/wishlist/events
+
+Method: GET
+
+Role: Retrieves the full list of event models in the authenticated user's wishlist by first querying the local database for IDs, and then calling the Event Service via HTTP.
+```
+
+#### Request Headers & Parameters:
+
+| Header/Param | Type | Description |
+| :--- | :--- | :--- |
+| `X-email` (Header) | String | **Required.** Email of the authenticated user. |
+
+**Success Response (200 OK):** Returns a list of `EventModel` objects.
+
+```json
+[
+    {
+        "event_id": 1759638504330052006,
+        "title": "Business Development Head - Lucknow",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/part-time-business-development-head-lucknow-job-in-lucknow-at-ambrosia-botanical1759310554",
+        "location": "Lucknow",
+        "salary": "₹ 3,00,000 - 6,00,000",
+        "start_date": "2025-10-02 00:00:00",
+        "end_date": "2025-10-06 23:59:59",
+        "type": "Job",
+        "description": "Key Responsibilities include launching state operations, hiring and training teams, driving sales and market penetration, building partnerships with vendors, distributors, and clients. The role also involves researching market trends, implementing state-level marketing campaigns, managing budgets, optimizing costs, and reporting performance. The candidate will represent the startup as a brand ambassador and build a strong B2B and B2C presence in the market."
+    },
+    {
+        "event_id": 1759638504360791743,
+        "title": "Junior Social Media Marketing Manager",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F9rz9jeihuee-38066.png.webp",
+        "event_link": "https://internshala.com/job/detail/junior-social-media-marketing-manager-job-in-pune-at-creative-squad-studio1759465879",
+        "location": "Pune",
+        "salary": "₹ 5,50,000 - 8,00,000",
+        "start_date": "2025-10-04 10:10:32",
+        "end_date": "2025-10-06 23:59:59",
+        "type": "Job",
+        "description": "Manage and grow the brand’s social media presence across all major platforms. Develop engaging content strategies showcasing events, academic programs, student life, and key achievements. Collaborate with creative, academic, and administrative teams to craft campaigns. Plan and execute digital marketing strategies to boost brand awareness and engagement. Analyze performance data to optimize campaigns and maximize reach. Stay updated on industry trends to ensure timely, relevant, and impactful content."
+    }
+]
+```

@@ -57,8 +57,8 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> searchQuery(@RequestParam String q ){
+    @GetMapping("/search/{q}")
+    public ResponseEntity<?> searchQuery( @PathVariable String q ){
         List<EventModel> events = eventService.searchQuery( q );
         return ResponseEntity.ok(events);
     }
