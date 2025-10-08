@@ -360,18 +360,376 @@ Method: GET
 
 Success Response (200 OK): Returns a list of EventModel objects.
 ```
+**Response**
+```JSON
+[
+    {
+        "event_id": 101,
+        "title": "Spring Boot Developer Job",
+        "image_url": null,
+        "event_link": null,
+        "location": "Remote",
+        "salary": "₹ 15,00,000",
+        "start_date": "2025-11-01 09:00:00",
+        "end_date": "2025-11-30 17:00:00",
+        "type": "Job",
+        "description": "Full-stack developer opportunity..."
+    },
+    {
+        "event_id": 1759638358041797766,
+        "title": "Video Editing/Making",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F614e070b58af31632503563.png.webp",
+        "event_link": "https://internshala.com/internship/detail/video-editing-making-internship-in-raipur-at-setmycart1759489610",
+        "location": "Raipur, Devpuri (Hybrid)",
+        "salary": "₹5000",
+        "start_date": "2025-10-04 10:03:54",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "SetMyCart seeks a talented Video Editor/Graphic Design intern. Responsibilities include editing and producing high-quality video and graphic content for web and social media. Collaborate with the marketing team on creative concepts. Utilize skills in Adobe Premiere Pro, Final Cut Pro, Adobe Photoshop, and Canva for video enhancement, graphics, and animations. Assist with social media marketing by creating video ads and promotional content. Stay updated on industry trends. The ideal candidate is passionate about video editing and eager to gain hands-on experience in a fast-paced environment."
+    },
+    {
+        "event_id": 1759638359989643238,
+        "title": "Travel Companion (PA)",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F648984936ecf71686733971.png.webp",
+        "event_link": "https://internshala.com/internship/detail/travel-companion-pa-internship-in-multiple-locations-at-wehire-talent-solutions1758018907",
+        "location": "Mumbai, Virar, Vasai, Mira Bhayandar, Vasai-Virar (Hybrid)",
+        "salary": "₹ 5,000 /month",
+        "start_date": "2025-09-21 10:04:05",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Assist clients with travel planning, including booking flights, accommodations, and activities. Provide on-the-ground support during travel, ensuring clients' needs are met. Communicate with clients and vendors to coordinate travel arrangements. Utilize networking skills to build relationships with travel industry partners. Analyze data and metrics to optimize conversion rates and improve client satisfaction. Implement time management strategies to efficiently handle multiple client requests. Provide exceptional customer service and support to enhance the overall travel experience."
+    }
+]
+```
 
 ### 5. Get Events by List of IDs
 **Request**
 ```http
-Endpoint: event-service/api/v1/events/by-ids?eventsIdList=101,102,105
+Endpoint: event-service/api/v1/events/by-ids?eventsIdList=101,1759638359998055036,1759638360003630720
 
 Method: GET
 
 Success Response (200 OK): Returns a list of EventModel objects matching the provided IDs.
 ```
 
+```json
+[
+    {
+        "event_id": 101,
+        "title": "Spring Boot Developer Job",
+        "image_url": null,
+        "event_link": null,
+        "location": "Remote",
+        "salary": "₹ 15,00,000",
+        "start_date": "2025-11-01 09:00:00",
+        "end_date": "2025-11-30 17:00:00",
+        "type": "Job",
+        "description": "Full-stack developer opportunity..."
+    },
+    {
+        "event_id": 1759638359998055036,
+        "title": "Content and Social Media Marketing",
+        "image_url": "https://internshala-uploads.internshala.com/logo%2F8hf1insp1qj-37990.png.webp",
+        "event_link": "https://internshala.com/internship/detail/part-time-content-and-social-media-marketing-internship-in-multiple-locations-at-good-eatco1759064921",
+        "location": "Dombivli, Dombivili",
+        "salary": "₹ 4,000 - 5,000 /month",
+        "start_date": "2025-09-29 10:04:23",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Good Eatco seeks a dynamic Content and Social Media Marketing intern. Gain hands-on experience in social media marketing, digital marketing tools, and content writing. Key Responsibilities include developing engaging social media content, assisting with marketing strategies, monitoring performance, collaborating on creative ideas, writing blog posts, staying updated on trends, and supporting the marketing team. Ideal for creative, driven individuals passionate about food and marketing."
+    },
+    {
+        "event_id": 1759638360003630720,
+        "title": "Graphic Design",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/internship/detail/graphic-design-internship-in-gurgaon-at-ambrosia-botanical1759310569",
+        "location": "Gurgaon",
+        "salary": "₹ 5,000 - 12,000 /month",
+        "start_date": "2025-10-02 10:04:31",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Internship",
+        "description": "Assist in creating graphics for social media, presentations, websites, and marketing materials. Learn and contribute to design projects involving 3D graphics, animations, and short-form video content. Support in developing visuals like brochures, flyers, and promotional creatives. Translate simple briefs into creative design concepts. Take part in brainstorming sessions and provide fresh design ideas."
+    }
+]
+```
 
 
+-----
+
+## Auth Service API Endpoints
+
+This section provides details and examples for the authentication and user profile management API in the **Auth Service**.
+
+| Endpoint | Method | Role | Success Status |
+| :--- | :--- | :--- | :--- |
+| `auth-service/api/v1/signup` | **POST** | Registers a new user and returns their profile with a JWT. | `201 CREATED` |
+| `auth-service/api/v1/login` | **POST** | Authenticates a user and returns their profile with a JWT. | `200 OK` |
+| `auth-service/api/v1/profile` | **GET** | Retrieves the details of the currently authenticated user. | `200 OK` |
+| `auth-service/api/v1/profile` | **PATCH** | Updates the profile details (e.g., name, address, preferences) of the authenticated user. | `200 OK` |
+
+### 1\. Register a New User (Sign Up)
+
+**Request**
+
+```http
+Endpoint: auth-service/api/v1/signup
+
+Method: POST
+
+Role: Creates a new user in the system.
+```
+
+#### Request Body (Example):
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securepassword123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St, Anytown",
+  "preferences": ["INTERNSHIP","JOB","HACKATHON"]
+}
+```
+
+**Success Response (201 CREATED):** Returns the user's profile and JWT.
+
+```json
+{
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St, Anytown",
+  "preferences": ["INTERNSHIP","JOB","HACKATHON"],
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 2\. Authenticate and Generate Token (Login)
+
+**Request**
+
+```http
+Endpoint: auth-service/api/v1/login
+
+Method: POST
+
+Role: Authenticates user credentials and issues a JWT for subsequent requests.
+```
+
+#### Request Body (Example):
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Success Response (200 OK):** Returns the user's profile and JWT.
+
+```json
+{
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St, Anytown",
+  "preferences": ["INTERNSHIP","JOB","HACKATHON"]
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### 3\. Get User Profile Details
+
+**Request**
+
+```http
+Endpoint: auth-service/api/v1/profile
+
+Method: GET
+
+Role: Retrieves the details of the user whose JWT is present in the Authorization header.
+```
+
+**Success Response (200 OK):** Returns the details of the authenticated user.
+
+```json
+{
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "1234567890",
+  "address": "123 Main St, Anytown",
+  "preferences": ["INTERNSHIP","JOB","HACKATHON"]
+}
+```
+
+### 4\. Update User Profile Details
+
+**Request**
+
+```http
+Endpoint: auth-service/api/v1/profile
+
+Method: PATCH
+
+Role: Updates the profile details. Only fields present in the request body will be updated (PATCH-style).
+```
+
+#### Request Body (Example: Updating only phone number and preferences):
+
+```json
+{
+  "phoneNumber": "9876543210",
+  "address":"Jubli Hills , Hyderabad"
+}
+```
+
+**Success Response (200 OK):** Returns the fully updated user profile DTO.
+
+```json
+{
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "9876543210",
+  "address":"Jubli Hills , Hyderabad",
+  "preferences": ["INTERNSHIP","JOB","HACKATHON"]
+}
+```
 
 
+-----
+
+## Recommendation Service API Endpoints (Revised)
+
+This section provides details and examples for the event consumption and personalized feed delivery API in the **Recommendation Service**.
+
+| Endpoint | Method | Role | Success Status |
+| :--- | :--- | :--- | :--- |
+| `recommendation-service/api/v1/events` | **PUT** | **(Internal/Testing)** **Directly** receives and persists a cleaned event object to the local database. Used to **test data integrity** and maintain the local event store for recommendation modeling, bypassing the Kafka stream. | `200 OK` |
+| `recommendation-service/api/v1/events` | **GET** | Retrieves all events stored locally in the recommendation database. Primarily for **internal testing/audit**. | `200 OK` |
+| `recommendation-service/api/v1/events/feed` | **GET** | Generates and delivers a **personalized feed** of events for the authenticated user based on their preferences. | `200 OK` |
+
+### 1\. Create or Update Event (Internal/Testing)
+
+**Request**
+
+```http
+Endpoint: recommendation-service/api/v1/events
+
+Method: PUT
+
+Role: Internal endpoint used for **manual insertion or testing** of event data. This allows developers to directly verify the data persistence and service logic without relying on the Kafka message broker.
+```
+
+#### Request Body (Example):
+
+```json
+{
+  "event_id": 1759850574679243300,
+  "title": "Spring Boot Developer Job",
+  "image_url": "https://example.com/logo.png",
+  "event_link": "https://example.com/event",
+  "location": "Remote",
+  "salary": "₹ 15,00,000",
+  "start_date": "2025-11-01 09:00:00",
+  "end_date": "2025-11-30 17:00:00",
+  "type": "Job",
+  "description": "Full-stack developer opportunity..."
+}
+```
+
+**Success Response (200 OK):** Returns the persisted `EventModel` object.
+
+### 2\. Get All Events (Internal/Debug)
+
+**Request**
+
+```http
+Endpoint: recommendation-service/api/v1/events
+
+Method: GET
+
+Role: Retrieves a list of all events stored in the recommendation service's database.
+```
+
+**Success Response (200 OK):** Returns a list of `EventModel` objects.
+
+```JSON
+[
+    {
+        "event_id": 1759591163066659794,
+        "title": "Sales Associate",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/sales-associate-job-in-multiple-locations-at-yes-italy-edutech-pvt-ltd1755165308",
+        "location": "Delhi, Mumbai",
+        "salary": "₹ 4,00,000 - 10,50,000",
+        "start_date": "2025-09-13 20:50:24",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Job",
+        "description": "Key Responsibilities: Engage with prospective students and parents, providing personalized counseling on study abroad programs in Italy. Manage leads via calls, emails, and online platforms. Achieve monthly/quarterly sales targets by converting leads into enrollments. Leverage expertise in selling high-ticket products to build client trust. Collaborate with the admissions team for smooth application and visa processes. Maintain accurate records in the CRM system."
+    },
+    {
+        "event_id": 1759591164424605461,
+        "title": "Business Development Head - Chandigarh",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/part-time-business-development-head-chandigarh-job-in-chandigarh-at-ambrosia-botanical1759310528",
+        "location": "Chandigarh",
+        "salary": "₹ 3,00,000 - 6,00,000",
+        "start_date": "2025-10-01 00:00:00",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Job",
+        "description": "Key Responsibilities include launching state operations (hiring, training, team building), driving sales and market penetration, building partnerships with vendors, distributors, and clients. The role also involves researching market trends, implementing state-level marketing campaigns, managing budgets, optimizing costs, and reporting performance. Represent the startup as a brand ambassador and build a strong B2B and B2C market presence."
+    }
+]
+```
+
+### 3\. Get Personalized User Feed
+
+**Request**
+
+```http
+Endpoint: recommendation-service/api/v1/events/feed
+
+Method: GET
+
+Role: Retrieves a paginated list of events personalized for the user identified by the email header.
+```
+
+#### Request Headers & Parameters:
+
+| Header/Param | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `X-email` (Header) | String | *Required* | Email of the authenticated user to personalize the feed for. |
+| `page` (Query Param) | Integer | 0 | The page number for pagination. |
+| `size` (Query Param) | Integer | 10 | The number of events per page. |
+
+**Example Request:**
+
+```http
+GET recommendation-service/api/v1/events/feed?page=1&size=5
+X-email: john.doe@example.com
+```
+
+**Success Response (200 OK):** Returns a paginated list of **recommended** `EventModel` objects.
+
+```JSON
+[
+    {
+        "event_id": 1759591163066659794,
+        "title": "Sales Associate",
+        "image_url": "https://internshala.com/static/images/search/placeholder_logo.svg",
+        "event_link": "https://internshala.com/job/detail/sales-associate-job-in-multiple-locations-at-yes-italy-edutech-pvt-ltd1755165308",
+        "location": "Delhi, Mumbai",
+        "salary": "₹ 4,00,000 - 10,50,000",
+        "start_date": "2025-09-13 20:50:24",
+        "end_date": "2025-10-31 23:59:59",
+        "type": "Job",
+        "description": "Key Responsibilities: Engage with prospective students and parents, providing personalized counseling on study abroad programs in Italy. Manage leads via calls, emails, and online platforms. Achieve monthly/quarterly sales targets by converting leads into enrollments. Leverage expertise in selling high-ticket products to build client trust. Collaborate with the admissions team for smooth application and visa processes. Maintain accurate records in the CRM system."
+    }
+]
+```

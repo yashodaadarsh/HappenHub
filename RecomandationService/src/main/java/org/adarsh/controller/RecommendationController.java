@@ -10,38 +10,41 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/event")
-public class RecomandationController {
+@RequestMapping("recommendation-service/api/v1/events")
+public class RecommendationController { 
 
     @Autowired
     private EventService eventService;
 
-    @PostMapping("/createupdate")
-    public ResponseEntity<EventModel> createUpdate(@RequestBody EventModel eventModel ){
+    @PostMapping
+    public ResponseEntity<EventModel> createOrUpdateEvent(@RequestBody EventModel eventModel ){
         try{
             EventModel event = eventService.createOrUpdateUser(eventModel);
             return new ResponseEntity<>(event, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<EventModel>> getAllEvent(){
+    @GetMapping 
+    public ResponseEntity<List<EventModel>> getAllEvents(){
         List<EventModel> events = eventService.findAll();
-        return new ResponseEntity<>(events,HttpStatus.OK);
+        return ResponseEntity.ok(events); 
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<List<EventModel>> getFeed(
+    public ResponseEntity<?> getPersonalizedFeed(
             @RequestHeader("X-email") String email,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        List<EventModel> feed = eventService.getFeed(email, page, size);
-        return ResponseEntity.ok(feed);
-
+        try{
+            List<EventModel> feed = eventService.getFeed(email, page, size);
+            return ResponseEntity.ok(feed);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Email id is not present. Please Register or provide a valid 'X-email' header.");
+        }
     }
-
-
 }

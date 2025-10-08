@@ -1,11 +1,8 @@
 package com.adarsh.AuthService.controller;
 
-import com.adarsh.AuthService.entity.User;
-import com.adarsh.AuthService.repository.UserDetailsRepository;
 import com.adarsh.AuthService.request.AuthRequest;
-import com.adarsh.AuthService.response.AuthResponse;
+import com.adarsh.AuthService.response.UserDetailsDTO;
 import com.adarsh.AuthService.service.CustomUserDetailsService;
-import com.adarsh.AuthService.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +10,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("scrapping-service/api/v1")
+@RequestMapping("auth-service/api/v1")
 public class AuthController {
 
     @Autowired
@@ -51,7 +47,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/ping")
+    @GetMapping("/profile")
     public ResponseEntity<?> getDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -61,5 +57,11 @@ public class AuthController {
 
         String username = authentication.getName();
         return ResponseEntity.ok().body(customUserDetailsService.getDetails(username));
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<UserDetailsDTO> putDetails(@RequestBody AuthRequest authRequest ) {
+        UserDetailsDTO updatedUser = customUserDetailsService.update( authRequest );
+        return ResponseEntity.ok(updatedUser);
     }
 }

@@ -9,6 +9,8 @@ import com.adarsh.AuthService.response.AuthResponse;
 import com.adarsh.AuthService.response.UserDetailsDTO;
 import com.adarsh.AuthService.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -103,6 +105,48 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
                 .preferences(user.getPreferences())
+                .build();
+    }
+
+    public UserDetailsDTO update( AuthRequest authRequest ) {
+
+        if( authRequest.getEmail() == null ){
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            authRequest.setEmail(email);
+        }
+
+        User existingUser = userDetailsRepository.findByEmail(authRequest.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found for update"));
+
+        if (authRequest.getFirstName() != null) {
+            existingUser.setFirstName(authRequest.getFirstName());
+        }
+        if (authRequest.getLastName() != null) {
+            existingUser.setLastName(authRequest.getLastName());
+        }
+        if (authRequest.getPhoneNumber() != null) {
+            existingUser.setPhoneNumber(authRequest.getPhoneNumber());
+        }
+        if (authRequest.getAddress() != null) {
+            existingUser.setAddress(authRequest.getAddress());
+        }
+        if (authRequest.getPreferences() != null) {
+            existingUser.setPreferences(authRequest.getPreferences());
+        }
+
+        User savedUser = userDetailsRepository.save(existingUser);
+
+        UserDataModel userDataModel = convertToUserDataModel(savedUser);
+        userDataProducer.sendEventToKafka(userDataModel);
+
+        return UserDetailsDTO.builder()
+                .email(savedUser.getEmail())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .phoneNumber(savedUser.getPhoneNumber())
+                .address(savedUser.getAddress())
+                .preferences(savedUser.getPreferences())
                 .build();
     }
 }
